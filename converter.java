@@ -229,63 +229,79 @@ public class converter {
 			else if (tipoDeOperacao.equals("/")) {
 				int[] dividendoQ = new int[primeiroValor.length()];
 				int[] divisorB = new int[segundoValor.length()];
+				int[] valorQ = new int[primeiroValor.length()];
 				int[] resultado = new int[valorBits];
-				int[] a = new int[primeiroValor.length() + 1];// REMAINDER
+				int[] a = new int[valorBits + 2];// REMAINDER
 				int count = primeiroValor.length();
+				int aux = primeiroValor.length()-1;
 
 				for (int i = 0; i < valorBits; i++) {
 					resultado[i] = 0;
+					a[i] = 0;
 				}
 
 				dividendoQ = metodos.validarArray(primeiroValor, valorBits);
 				divisorB = metodos.validarArray(segundoValor, valorBits);
+				valorQ = metodos.validarArray(primeiroValor, valorBits);
 
 				while (count != 0) {
-					a = metodos.shiftLeftA(a, primeiroValor, dividendoQ);
+					// System.out.println("a antes: ");
+					// for (int k = valorBits - 1; k >= 0; k--) {
+					// 	System.out.print(a[k]);
+					// }
+					// System.out.println();
+
+					// System.out.println("dividendoQ antes: ");
+					// for (int k = valorBits - 1; k >= 0; k--) {
+					// 	System.out.print(dividendoQ[k]);
+					// }
+					// System.out.println();
+					
+					a = metodos.shiftLeftA(a, valorBits, valorQ, aux);
 					dividendoQ = metodos.shiftLeftQ(dividendoQ, valorBits);
+					aux--;
 
-					System.out.println("a: ");
-					for (int k = valorBits - 1; k >= 0; k--) {
-						System.out.print(a[k]);
-					}
-					System.out.println();
+					// System.out.println("a depois: ");
+					// for (int k = valorBits - 1; k >= 0; k--) {
+					// 	System.out.print(a[k]);
+					// }
+					// System.out.println();
 
-					System.out.println("dividendoQ: ");
-					for (int k = valorBits - 1; k >= 0; k--) {
-						System.out.print(dividendoQ[k]);
-					}
-					System.out.println();
+					// System.out.println("dividendoQ depois: ");
+					// for (int k = valorBits - 1; k >= 0; k--) {
+					// 	System.out.print(dividendoQ[k]);
+					// }
+					// System.out.println();
 
 					a = metodos.subtrair(valorBits, a, divisorB);
 
-					System.out.println("a(subtrair): ");
-					for (int k = valorBits - 1; k >= 0; k--) {
-						System.out.print(a[k]);
-					}
-					System.out.println();
+					// System.out.println("a(subtrair): ");
+					// for (int k = valorBits - 1; k >= 0; k--) {
+					// 	System.out.print(a[k]);
+					// }
+					// System.out.println();
 
-					if (a[0] == 1) {
+					if (a[valorBits-1] == 1) {
 						dividendoQ[0] = 0;
 						a = metodos.soma(valorBits, a, divisorB);
 					} else {
 						dividendoQ[0] = 1;
-						a = metodos.soma(valorBits, a, divisorB);
 					}
 					count--;
 				}
 				resultado = dividendoQ;
 
 				// Imprime resultado
-				System.out.print("Divisor: ");
-				for (int k = valorBits - 1; k >= 0; k--) {
-					System.out.print(divisorB[k]);
-				}
+				// System.out.print("Divisor: ");
+				// for (int k = valorBits - 1; k >= 0; k--) {
+				// 	System.out.print(divisorB[k]);
+				// }
 
-				System.out.println();
-				System.out.print("Dividendo: ");
-				for (int k = valorBits - 1; k >= 0; k--) {
-					System.out.print(dividendoQ[k]);
-				}
+				// System.out.println();
+				// System.out.print("Dividendo: ");
+				// for (int k = valorBits - 1; k >= 0; k--) {
+				// 	System.out.print(dividendoQ[k]);
+				// }
 
 				System.out.print("Resultado: ");
 				for (int k = valorBits - 1; k >= 0; k--) {
@@ -378,53 +394,40 @@ public class converter {
 
 			if (tipoDeOperacao.equals("+")) {
 				if (expoentePrimeiroValor == expoenteSegundoValor) {
-					int posicaoVirgula = 0;
-					int aux = 0;
-					for (int i = tamanhoArray - 1; i >= 0; i--) {
-						if (valor1[i] == '0' && valor2[i] == '0') {
-							if (aux == 1) {
-								resultado[i] = '1';
-								aux = 0;
-							} else {
-								aux = 0;
-							}
-						} else if ((valor1[i] == '1' && valor2[i] == '0') || (valor1[i] == '0' && valor2[i] == '1')) {
-							if (aux == 1) {
-								aux = 1;
-							} else {
-								resultado[i] = '1';
-								aux = 0;
-							}
-						} else if (valor1[i] == '1' && valor2[i] == '1') {
-							if (aux == 1) {
-								resultado[i] = '1';
-								aux = 1;
-							} else {
-								aux = 1;
-							}
-						} else if (valor1[i] == ',' && valor2[i] == ',') {
-							resultado[i] = ',';
-							posicaoVirgula = i;
-						}
+					if (sinalPrimeiroValor.equals("+") && sinalSegundoValor.equals("+")) {
+						resultado = metodos.somaFloat(tamanhoArray, valor1, valor2);
 					}
-					if (resultado[0] == '1') {
-						char auxiliar;
-						auxiliar = resultado[posicaoVirgula];
-						resultado[2] = resultado[1];
-						resultado[1] = auxiliar;
+					else if (sinalPrimeiroValor.equals("-") && sinalSegundoValor.equals("+")) {
+						valor1 = metodos.complemento2Float(tamanhoArray, valor1);
+						resultado = metodos.somaFloat(tamanhoArray, valor1, valor2);
 					}
-					// imprimir valor o i=0 é o primeiro valor da esquerda
-
+					else if (sinalPrimeiroValor.equals("+") && sinalSegundoValor.equals("-")) {
+						valor2 = metodos.complemento2Float(tamanhoArray, valor2);
+						resultado = metodos.somaFloat(tamanhoArray, valor1, valor2);
+					}
+					else if (sinalPrimeiroValor.equals("-") && sinalSegundoValor.equals("-")) {
+						valor1 = metodos.complemento2Float(tamanhoArray, valor1);
+						valor2 = metodos.complemento2Float(tamanhoArray, valor2);
+						resultado = metodos.somaFloat(tamanhoArray, valor1, valor2);
+					}
+					
 				} else if (expoentePrimeiroValor > expoenteSegundoValor) {
-					valor1 = metodos.inverteArray(tamanhoArray, valor1);
+					valor2 = metodos.inverteArray(tamanhoArray, valor2);
+					valor2 = metodos.deslocamentoFloat(tamanhoArray, valor2, diferencaExpoente);
 					valor2 = metodos.inverteArray(tamanhoArray, valor2);
 
-					valor2 = metodos.deslocamentoFloat(tamanhoArray, valor2, diferencaExpoente);
+					// System.out.println();
+					// System.out.println("Resultado Inverte Array e desloca virgula: ");
+					// for (int i = tamanhoArray -1 ; i >= 0; i--) {
+					// System.out.print(valor2[i]);
+					// }
+					resultado = metodos.somaFloat(tamanhoArray, valor1, valor2);
 
-					System.out.println("Resultado Inverte Array e desloca virgula: ");
-					for (int i = tamanhoArray -1 ; i >= 0; i--) {
-						System.out.print(valor2[i]);
-					}
+				} else if (expoentePrimeiroValor < expoenteSegundoValor) {
+					valor1 = metodos.inverteArray(tamanhoArray, valor1);
+					valor1 = metodos.deslocamentoFloat(tamanhoArray, valor1, diferencaExpoente);
+					valor1 = metodos.inverteArray(tamanhoArray, valor1);
+					resultado = metodos.somaFloat(tamanhoArray, valor1, valor2);
 				}
 
 				System.out.println();
