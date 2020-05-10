@@ -2,13 +2,17 @@
 public class metodos {
 
     // COMPLEMENTO-DE-2--------------------------------------------------------------------------------------
+    // Função que faz complemento de 2 nos números binários
     public static int[] complemento2(int valorBits, int[] valor1) {
+        //criamos dois arrays auxiliares para fazer  complemento
         int[] numeroEmComp2 = new int[valorBits];
         int[] somaUm = new int[valorBits];
         for (int i = 0; i < valorBits; i++) {
             somaUm[i] = 0;
         }
         somaUm[0] = 1;
+
+        //alterna os valores, 1 se torna 0 e 0 se torna 1
         for (int i = 0; i < valorBits; i++) {
             if (valor1[i] == 0) {
                 numeroEmComp2[i] = 1;
@@ -17,17 +21,18 @@ public class metodos {
             }
         }
 
+        //retorna a soma dos numero invertido com 1
         return soma(valorBits, numeroEmComp2, somaUm);
     }
 
     // SOMA----------------------------------------------------------------------------------------------------------
+    // Funçao que realiza a soma de números binários, printando "Overflow" quando acontecer overflow
     public static int[] soma(int valorBits, int[] valor1, int[] valor2) {
         int[] resultado = new int[valorBits];
         for (int i = 0; i < valorBits; i++) {
             resultado[i] = 0;
         }
         int aux = 0;
-        boolean overflow = false;
         for (int i = 0; i < valorBits; i++) {
             if (valor1[i] == 0 && valor2[i] == 0) {
                 if (aux == 1) {
@@ -39,7 +44,6 @@ public class metodos {
             } else if ((valor1[i] == 1 && valor2[i] == 0) || (valor1[i] == 0 && valor2[i] == 1)) {
                 // verifica se vai dar overflow
                 if (i == valorBits - 1 && aux == 1) {
-                    overflow = true;
                     System.out.println("Overflow");
                 }
 
@@ -52,7 +56,6 @@ public class metodos {
             } else if (valor1[i] == 1 && valor2[i] == 1) {
                 // verifica se vai dar overflow
                 if (i == valorBits - 1) {
-                    overflow = true;
                     System.out.println("Overflow");
                 }
 
@@ -68,14 +71,16 @@ public class metodos {
     }
 
     // VALIDAR-ARRAY----------------------------------------------------------------------------------------------------
-    // O primeiro número da direita do numero binário está na posição 0 do array
+    // Coloca o valor inserido pelo usuário dentro de um array, sendo que o primeiro número da direita do numero binário está na posição 0 do array
     public static int[] validarArray(String valorString, int valorBits) {
+        // Criando e zerando array auxiliar
         int[] valor = new int[valorBits];
-
+        
         for (int i = 0; i < valorBits; i++) {
             valor[i] = 0;
         }
 
+        // Colocando o valor inserido no array de trás para frente
         int f = 0;
         for (int i = valorString.length() - 1; i >= 0; i--) {
             if (valorString.charAt(i) == '0') {
@@ -91,6 +96,9 @@ public class metodos {
     }
 
     // ALGORITMO-DE-BOOTH-----------------------------------------------------------------------------------------------
+    // O algoritmo de booth consiste em utilizar um array modificado de acordo com o valor1 ou valor2, comparando o mesmo com uma variavel "q"
+    // e dependendo do resultado da comparacao, ocorre uma determinada alteracao no array modificado, repetindo o ciclo valorBits de vezes ate chegar
+    // ao resultado
     public static int[] booth(int valorBits, int[] valor1, int[] valor2) {
         int y = 0;
         int q = 0;
@@ -108,11 +116,11 @@ public class metodos {
         for (int i = valorBits - 1; i >= 0; i--) {
             resultado[i] = valor2[i];
         }
-        complementoDoValor1 = complemento2(valorBits, valor1);
+        complementoDoValor1 = complemento2(valorBits, valor1); // guardando o complemento do valor1 para realizar a subtracao (utilizando o metodo soma)
 
-        while (y < valorBits) {
-            if ((resultado[0] == 0 && q == 0) || (resultado[0] == 1 && q == 1)) { // P
-                if (resultado[0] == 1) {
+        while (y < valorBits) { // comparar valorBits de vezes
+            if ((resultado[0] == 0 && q == 0) || (resultado[0] == 1 && q == 1)) {  // se o ultimo bit do array modificado for 0 e q for 0, ou o ultimo bit do array modificado for 1 e q for 1
+                if (resultado[0] == 1) { 
                     if (resultado[tamanhoDaTabela - 1] == 1) {
                         resultado = deslocamento(tamanhoDaTabela, resultado);
                         resultado[tamanhoDaTabela - 1] = 1;
@@ -131,7 +139,7 @@ public class metodos {
                         resultado = deslocamento(tamanhoDaTabela, resultado);
                     }
                 }
-            } else if (resultado[0] == 1 && q == 0) { // P2
+            } else if (resultado[0] == 1 && q == 0) { // se o ultimo bit do array modificado for 1 e q for 0
                 a = soma(valorBits, a, complementoDoValor1);
                 resultado = incrementarAAtualizado(a, resultado);
 
@@ -145,7 +153,7 @@ public class metodos {
                     a = atualizaA(valorBits, resultado);
                     q = 1;
                 }
-            } else if (resultado[0] == 0 && q == 1) { // P3
+            } else if (resultado[0] == 0 && q == 1) { // se o ultimo bit do array modificado for 0 e q for 1
                 a = soma(valorBits, a, valor1);
                 resultado = incrementarAAtualizado(a, resultado);
 
@@ -166,7 +174,7 @@ public class metodos {
         return resultado;
     }
 
-    // ATUALIZA-A----------------------------------------------------------------------------------------------------
+    // ATUALIZA-A---------------------------------------------------------------------------------------------------
     public static int[] atualizaA(int valorBits, int[] resultado) {
         int[] a = new int[valorBits];
         for (int j = 0; j < valorBits; j++) {
@@ -217,6 +225,7 @@ public class metodos {
     }
 
     // DESLOCAMENTO-FLOAT---------------------------------------------------------------------------------------------------
+    // Faz o deslocamento do floast de acordo com o valor do expoente
     public static char[] deslocamentoFloat(int tamanhoArray, char[] resultado, int diferencaExpoente) {
         int cont = 0;
         int posicaoVirgula = 0;
@@ -242,6 +251,7 @@ public class metodos {
     }
 
     // SOMA-FLOAT---------------------------------------------------------------------------------------------
+    // Soma para floats considerando o caractér ","
     public static char[] somaFloat(int tamanhoArray, char[] valor1, char[] valor2) {
         int posicaoVirgula = 0;
         int aux = 0;
@@ -288,6 +298,7 @@ public class metodos {
     }
 
     // COMPLEMENTO-DE-2-FLOAT--------------------------------------------------------------------------------------
+    // Complemento de 2 para binarios float, considerando a vírgula
     public static char[] complemento2Float(int tamanhoArray, char[] valor1) {
         char[] numeroEmComp2 = new char[tamanhoArray];
         char[] somaUm = new char[tamanhoArray];
@@ -321,6 +332,7 @@ public class metodos {
     }
 
     // INVERTE-ARRAY----------------------------------------------------------------------------------------------------
+    // Inverte a ordem do array
     public static char[] inverteArray(int tamanhoArray, char[] valor) {
 
         char[] aux = new char[tamanhoArray];
@@ -338,7 +350,7 @@ public class metodos {
     }
 
     // SHIFT-LEFT-A-----------------------------------------------------------------------------------------------------
-    //
+    // Faz o deslocamento para a esquerda do array A da divisão
     public static int[] shiftLeftA(int[] vetorA, int valorBits, int[] dividendoQ, int count) {
         for (int j = valorBits - 1; j > 0; j--) {
             vetorA[j] = vetorA[j-1];
@@ -349,6 +361,7 @@ public class metodos {
     }
 
     // SHIFT-LEFT-Q-----------------------------------------------------------------------------------------------------
+    // Faz o deslocamento para a esquerda do Dividendo
     public static int[] shiftLeftQ(int[] dividendoQdois, int valorBits) {
         for (int i = valorBits - 1; i > 0; i--) {
             dividendoQdois[i] = dividendoQdois[i - 1];
@@ -357,6 +370,7 @@ public class metodos {
     }
 
     // SUBTRAIR-----------------------------------------------------------------------------------------------------------
+    // Função de subtração para divisão
     public static int[] subtrair(int valorBits, int[] valor1, int[] valor2) {
         int[] segundoValorComp2 = new int[valorBits];
         segundoValorComp2 = complemento2(valorBits, valor2);
